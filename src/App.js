@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import Header from './components/Header';
 
 export default function App() {
-  const baseUrl = 'https://1fb87be3-ae42-40dc-ba1f-6356d68c8c57.id.repl.co';
   const [guests, setGuests] = useState([]);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  // const [isAttending, setIsAttending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  // const [isAttending, setIsAttending] = useState(false);
+
+  const baseUrl = 'https://1fb87be3-ae42-40dc-ba1f-6356d68c8c57.id.repl.co';
 
   useEffect(() => {
     setIsLoading(false);
@@ -50,37 +50,38 @@ export default function App() {
     // console.log(createdGuest);
     const guestListCopy = [...guests, createdGuest];
     // setGuests(guestListCopy);
-    setGuests([...guests, guestListCopy]);
+    setGuests(guestListCopy);
     // 👇️ clearing input values after submit
-    // setFirstName('');
-    // setLastName('');
+    setFirstName('');
+    setLastName('');
   }
 
   async function handleSubmit(event) {
     event.preventDefault(); // Prevents the page to reload when submitting the form
     await addGuest();
     // 👇️ clearing input values after submit
-    setFirstName('');
-    setLastName('');
+    // setFirstName('');
+    // setLastName('');
   }
 
   // Update guest status (attending/not attending)
-  async function updateGuestStatus(id, status) {
+  async function updateGuestStatus(id, attending) {
     const response = await fetch(`${baseUrl}/guests/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ attending: !status }),
+      body: JSON.stringify({ attending: !attending }),
     });
     const updatedGuest = await response.json();
-    // const guestStatus = [...guests];
-    const updatedList = guests.filter((guest) => {
+    const guestStatus = [...guests];
+    const updatedList = guestStatus.filter((guest) => {
       return guest.id !== updatedGuest.id;
     });
-    setGuests([...guests], updatedList);
+    setGuests([...updatedList, updatedGuest]);
+    console.log(guests);
     // setGuests(updatedList);
-    addGuest().catch(() => console.log('Error'));
+    // addGuest().catch(() => console.log('Error'));
   }
 
   // Delete a guest
@@ -109,45 +110,28 @@ export default function App() {
     });
   }
 
-  // console.log(guests);
-
-  // removeGuest().catch((error) => {
-  //   console.error(error);
-  // });
-
-  // addGuest().catch((error) => {
-  //   console.log(error);
-  // });
-
   return (
     <div>
-      <Header />
-      <h1>Guest list</h1>
+      <h1>Your Guest List</h1>
       <form data-test-id="guest" onSubmit={handleSubmit}>
-        <label>
-          First name
-          <input
-            value={firstName}
-            placeholder="First name"
-            disabled={isLoading}
-            required
-            onChange={(event) => {
-              setFirstName(event.currentTarget.value);
-            }}
-          />
-        </label>
-        <label>
-          Last name
-          <input
-            value={lastName}
-            placeholder="Last name"
-            disabled={isLoading}
-            required
-            onChange={(event) => {
-              setLastName(event.currentTarget.value);
-            }}
-          />
-        </label>
+        <input
+          value={firstName}
+          placeholder="Enter first name"
+          disabled={isLoading}
+          required
+          onChange={(event) => {
+            setFirstName(event.currentTarget.value);
+          }}
+        />
+        <input
+          value={lastName}
+          placeholder="Enter last name"
+          disabled={isLoading}
+          required
+          onChange={(event) => {
+            setLastName(event.currentTarget.value);
+          }}
+        />
         <button disabled={isLoading}>Add guest</button>
       </form>
       {isLoading ? (
@@ -159,25 +143,29 @@ export default function App() {
           ) : (
             guests.map((guest) => (
               <div key={`guest--${guest.id}`} data-test-id="guest">
+                {/* <div> */}
                 <div>
-                  <div>
-                    <input
-                      aria-label={`${guest.firstName} ${guest.lastName} attending status`}
-                      checked={guest.attending}
-                      type="checkbox"
-                      onChange={() => {
-                        updateGuestStatus(guest.id, guest.attending).catch(
-                          (error) => console.log(error),
-                        );
-                      }}
-                    />
-                    <span>
-                      {guest.attending === true ? 'attending' : 'not attending'}
-                    </span>
-                  </div>
-                  <p>
-                    {guest.firstName} {guest.lastName}
-                  </p>
+                  {/* <p> */}
+                  {guest.firstName} {guest.lastName}{' '}
+                  {guest.attending === true ? 'attending' : 'not attending'}
+                  {/* </p> */}
+                  <input
+                    aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+                    checked={guest.attending}
+                    type="checkbox"
+                    // onChange={() => {
+                    //   updateGuestStatus(guest.id, guest.attending), event.currentTarget.checked,.catch(
+                    //     (error) => console.log(error),
+                    //   );
+                    // }}
+                    onChange={(event) =>
+                      updateGuestStatus(
+                        guest.id,
+                        guest.attending,
+                        event.currentTarget.checked,
+                      )
+                    }
+                  />
                   <button
                     aria-label={`remove ${guest.firstName}${guest.lastName}`}
                     onClick={() => {
@@ -187,6 +175,7 @@ export default function App() {
                     Remove
                   </button>
                 </div>
+                {/* </div> */}
               </div>
             ))
           )}
