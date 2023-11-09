@@ -5,7 +5,6 @@ export default function App() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  // const [isAttending, setIsAttending] = useState(false);
 
   const baseUrl = 'https://1fb87be3-ae42-40dc-ba1f-6356d68c8c57.id.repl.co';
 
@@ -14,24 +13,15 @@ export default function App() {
   }, [guests]);
 
   // Fetch the guestlist from an API
-
   async function getList() {
     setIsLoading(true);
     const response = await fetch(`${baseUrl}/guests`);
     const allGuests = await response.json();
     setGuests([...allGuests]);
-    // setIsLoading(false);
-    // console.log(allGuests);
   }
   useEffect(() => {
     getList().catch((error) => console.log(error));
   }, []);
-
-  // console.log(guests);
-
-  // when Submit button is clicked:
-  // function handleSubmit(e) {
-  //   e.preventDefault();
 
   // Add guest from API, POST method
   async function addGuest() {
@@ -47,9 +37,7 @@ export default function App() {
       }),
     });
     const createdGuest = await response.json();
-    // console.log(createdGuest);
     const guestListCopy = [...guests, createdGuest];
-    // setGuests(guestListCopy);
     setGuests(guestListCopy);
     // 👇️ clearing input values after submit
     setFirstName('');
@@ -59,9 +47,6 @@ export default function App() {
   async function handleSubmit(event) {
     event.preventDefault(); // Prevents the page to reload when submitting the form
     await addGuest();
-    // 👇️ clearing input values after submit
-    // setFirstName('');
-    // setLastName('');
   }
 
   // Update guest status (attending/not attending)
@@ -80,8 +65,6 @@ export default function App() {
     });
     setGuests([...updatedList, updatedGuest]);
     console.log(guests);
-    // setGuests(updatedList);
-    // addGuest().catch(() => console.log('Error'));
   }
 
   // Delete a guest
@@ -94,7 +77,6 @@ export default function App() {
       const deletedGuest = await response.json();
       // 1. create a copy
       const guestListUpdated = [...guests];
-      // console.log(deletedGuest);
 
       // 2. update the value
       const newGuestList = guestListUpdated.filter(
@@ -153,11 +135,6 @@ export default function App() {
                     aria-label={`${guest.firstName} ${guest.lastName} attending status`}
                     checked={guest.attending}
                     type="checkbox"
-                    // onChange={() => {
-                    //   updateGuestStatus(guest.id, guest.attending), event.currentTarget.checked,.catch(
-                    //     (error) => console.log(error),
-                    //   );
-                    // }}
                     onChange={(event) =>
                       updateGuestStatus(
                         guest.id,
