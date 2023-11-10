@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { HiTrash } from 'react-icons/hi';
+import styles from './App.module.scss';
 
 export default function App() {
   const [guests, setGuests] = useState([]);
@@ -93,10 +95,11 @@ export default function App() {
   }
 
   return (
-    <div>
-      <h1>Your Guest List</h1>
+    <div className={styles.box}>
+      <h1>Your Party Guest List</h1>
       <form data-test-id="guest" onSubmit={handleSubmit}>
         <input
+          className={styles.nameInput}
           value={firstName}
           placeholder="Enter first name"
           disabled={isLoading}
@@ -106,6 +109,7 @@ export default function App() {
           }}
         />
         <input
+          className={styles.nameInput}
           value={lastName}
           placeholder="Enter last name"
           disabled={isLoading}
@@ -114,45 +118,49 @@ export default function App() {
             setLastName(event.currentTarget.value);
           }}
         />
-        <button disabled={isLoading}>Add guest</button>
+        <button className={styles.addBtn} disabled={isLoading}>
+          Add guest
+        </button>
       </form>
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className="outputContainer">
+        <div>
           {guests.length === 0 ? (
             <p>Guest list is empty, please enter a name</p>
           ) : (
             guests.map((guest) => (
               <div key={`guest--${guest.id}`} data-test-id="guest">
-                {/* <div> */}
-                <div>
-                  {/* <p> */}
-                  {guest.firstName} {guest.lastName}{' '}
-                  {guest.attending === true ? 'attending' : 'not attending'}
-                  {/* </p> */}
-                  <input
-                    aria-label={`${guest.firstName} ${guest.lastName} attending status`}
-                    checked={guest.attending}
-                    type="checkbox"
-                    onChange={(event) =>
-                      updateGuestStatus(
-                        guest.id,
-                        guest.attending,
-                        event.currentTarget.checked,
-                      )
-                    }
-                  />
-                  <button
-                    aria-label={`remove ${guest.firstName}${guest.lastName}`}
-                    onClick={() => {
-                      handleRemove(guest.id);
-                    }}
-                  >
-                    Remove
-                  </button>
+                <div className={styles.guestName}>
+                  <p>
+                    {guest.firstName} {guest.lastName}{' '}
+                  </p>
+                  <div className={styles.checkbox}>
+                    <input
+                      aria-label={`${guest.firstName} ${guest.lastName} attending status`}
+                      checked={guest.attending}
+                      type="checkbox"
+                      onChange={(event) =>
+                        updateGuestStatus(
+                          guest.id,
+                          guest.attending,
+                          event.currentTarget.checked,
+                        )
+                      }
+                    />
+                    <span>{guest.attending === true ? 'yes' : 'no'}</span>
+
+                    <button
+                      className={styles.deleteBtn}
+                      aria-label={`remove ${guest.firstName}${guest.lastName}`}
+                      onClick={() => {
+                        handleRemove(guest.id);
+                      }}
+                    >
+                      <HiTrash size="1.4rem" />
+                    </button>
+                  </div>
                 </div>
-                {/* </div> */}
               </div>
             ))
           )}
