@@ -2,7 +2,7 @@
   "name": "react-guest-list",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://github.com/gretava/react-guest-list",
+  "homepage": ".",
   "scripts": {
     "build": "react-scripts build",
     "eject": "react-scripts eject",
